@@ -15,15 +15,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔨 Build Docker image
+      # 🔨 Build Docker image once
       - name: Build Playwright Docker image
         run: docker build -t task-manager-e2e .
 
-      # ▶️ Run ALL tests inside Docker
-      - name: Run Playwright tests
-        run: docker run --rm task-manager-e2e
+      # -------------------------
+      # 1️⃣ Auth tests
+      # -------------------------
+      - name: Run Auth tests
+        run: >
+          docker run --rm
+          task-manager-e2e
+          npx playwright test tests/auth.spec.ts --project=chromium
+        env:
+          CI: true
 
+      # -------------------------
+      # 2️⃣ Task CRUD tests
+      # -------------------------
+      - name: Run Task CRUD tests
+        run: >
+          docker run --rm
+          task-manager-e2e
+          npx playwright test tests/tasks.spec.ts --project=chromium --workers=1
+        env:
+          CI: true
+
+      # -------------------------
       # 📦 Upload report
+      # -------------------------
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4

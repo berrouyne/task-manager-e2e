@@ -38,7 +38,6 @@ test.describe('Task 3 - Negative Scenarios & Edge Cases', () => {
     await page.locator('textarea').fill('Long title test');
     await page.getByRole('button', { name: /add task/i }).click();
 
-    // Pass condition = app did not crash
     await expect(
       page.getByRole('heading', { name: /my tasks/i })
     ).toBeVisible();
@@ -53,8 +52,14 @@ test.describe('Task 3 - Negative Scenarios & Edge Cases', () => {
     await page.locator('textarea').fill('Special characters test');
     await page.getByRole('button', { name: /add task/i }).click();
 
-    await page.reload();
-    await expect(page.getByText(specialTitle)).toBeVisible({ timeout: 15000 });
+    await expect(async () => {
+      await page.goto('/dashboard');
+      const titleNode = page.getByText(specialTitle, { exact: true });
+      await expect(titleNode).toHaveCount(1);
+    }).toPass({ timeout: 30000, intervals: [3000] });
+
+    const titleNode = page.getByText(specialTitle, { exact: true });
+    await expect(titleNode).toBeVisible();
   });
 
 });

@@ -27,6 +27,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
 
     await page.click('button:has-text("Add Task")');
 
+    // 🔑 REQUIRED FOR CI
+    await page.reload();
     await expect(taskTitle(page, title)).toBeVisible();
   });
 
@@ -40,6 +42,7 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await page.locator('#edit-priority').selectOption('Low');
     await page.click('button:has-text("Save Changes")');
 
+    await page.reload();
     await expect(taskTitle(page, title)).toBeVisible();
   });
 
@@ -50,7 +53,6 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await expect(card).toBeVisible();
 
     await card.locator('button:has-text("Mark Complete")').click();
-
     await expect(card.locator('text=Status: Complete')).toBeVisible();
   });
 

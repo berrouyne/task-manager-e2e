@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "session_id",
-      "value": "346620b4-4663-4b73-aea8-da6a362eb0bd",
+      "value": "c9795578-a721-49ba-ab40-874d540c14d8",
       "domain": "significant-darcey-kwikicity-3dda52ea.koyeb.app",
       "path": "/",
-      "expires": 1767795359.460634,
+      "expires": 1767795735.226489,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Lax"

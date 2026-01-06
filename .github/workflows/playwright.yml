@@ -1,4 +1,5 @@
 name: Playwright Tests
+
 on:
   push:
     branches: [ main, master ]
@@ -9,6 +10,7 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,11 +26,25 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Run Playwright tests
-        run: npx playwright test --project=chromium
+      # -------------------------
+      # 1️⃣ Auth tests
+      # -------------------------
+      - name: Run Auth tests
+        run: npx playwright test tests/auth.spec.ts --project=chromium
         env:
           CI: true
 
+      # -------------------------
+      # 2️⃣ Task CRUD tests
+      # -------------------------
+      - name: Run Task CRUD tests
+        run: npx playwright test tests/tasks.spec.ts --project=chromium --workers=1
+        env:
+          CI: true
+
+      # -------------------------
+      # 3️⃣ Upload report
+      # -------------------------
       - name: Upload Playwright Report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

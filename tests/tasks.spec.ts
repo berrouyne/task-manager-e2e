@@ -5,75 +5,61 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
 
   async function gotoDashboard(page: Page) {
     await page.goto('/dashboard');
-    await expect(page.locator('text=My Tasks')).toBeVisible();
+    // This waits for the page to actually load correctly
+    await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible({ timeout: 15000 });
   }
 
-  async function waitForTask(page: Page, text: string) {
-    await page.waitForFunction(
-      t => document.body.innerText.includes(t),
-      text,
-      { timeout: 30000 }
-    );
-  }
-
-  function taskTitle(page: Page, text: string) {
-    return page.locator(`text=${text}`).first();
-  }
-
-  function taskCard(page: Page, text: string) {
-    return taskTitle(page, text).locator('xpath=ancestor::div[1]');
+  function getTaskCard(page: Page, taskTitle: string) {
+    // Scopes actions to the specific task card
+    return page.locator('div').filter({ hasText: taskTitle }).last();
   }
 
   test('Create Task: create a task and verify it appears', async ({ page }) => {
     title = `pw-task-${Date.now()}`;
-
     await gotoDashboard(page);
 
-    await page.fill('input[placeholder="e.g., Buy groceries"]', title);
-    await page.fill('textarea', 'Task created by Playwright');
+    await page.getByPlaceholder(/e\.g\., Buy groceries/i).fill(title);
+    await page.locator('textarea').fill('Task created by Playwright');
     await page.locator('#priority').selectOption('High');
+    
+    // Click Add
+    await page.getByRole('button', { name: /Add Task/i }).click();
 
-    await page.click('button:has-text("Add Task")');
-
-    await page.reload();
-    await waitForTask(page, title);
-    await expect(taskTitle(page, title)).toBeVisible();
+    // No reload needed. Playwright waits for the UI to update automatically.
+    await expect(page.getByText(title)).toBeVisible({ timeout: 15000 });
   });
 
   test('Edit Task: modify priority only', async ({ page }) => {
     await gotoDashboard(page);
 
-    const card = taskCard(page, title);
-    await expect(card).toBeVisible();
+    const card = getTaskCard(page, title);
+    await card.getByRole('button', { name: /edit/i }).click();
+    
+    // Wait for the edit form to appear
+    const dropdown = page.locator('#edit-priority');
+    await expect(dropdown).toBeVisible();
+    
+    await dropdown.selectOption('Low');
+    
+    // Use a locator that finds the button specifically
+    await page.locator('button').filter({ hasText: /save/i }).click();
 
-    await card.locator('button:has-text("Edit")').click();
-    await page.locator('#edit-priority').selectOption('Low');
-    await page.click('button:has-text("Save Changes")');
-
-    await page.reload();
-    await waitForTask(page, title);
-    await expect(taskTitle(page, title)).toBeVisible();
+    // Verify change within the card
+    await expect(card).toContainText('Low');
   });
 
   test('Mark Complete: toggle status', async ({ page }) => {
     await gotoDashboard(page);
-
-    const card = taskCard(page, title);
-    await expect(card).toBeVisible();
-
-    await card.locator('button:has-text("Mark Complete")').click();
-    await expect(card.locator('text=Status: Complete')).toBeVisible();
+    const card = getTaskCard(page, title);
+    await card.getByRole('button', { name: /Mark Complete/i }).click();
+    await expect(card).toContainText('Status: Complete');
   });
 
   test('Delete Task: delete and verify removal', async ({ page }) => {
     await gotoDashboard(page);
-
-    const card = taskCard(page, title);
-    await expect(card).toBeVisible();
-
+    const card = getTaskCard(page, title);
     page.once('dialog', d => d.accept());
-    await card.locator('button:has-text("Delete")').click();
-
-    await expect(taskTitle(page, title)).toHaveCount(0);
+    await card.getByRole('button', { name: /delete/i }).click();
+    await expect(page.getByText(title)).toHaveCount(0);
   });
 });

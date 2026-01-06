@@ -31,7 +31,7 @@ jobs:
           CI: true
 
       # -------------------------
-      # 2️⃣ Task CRUD tests
+      # 2️⃣ Task CRUD tests (Task 2)
       # -------------------------
       - name: Run Task CRUD tests
         run: >
@@ -42,7 +42,18 @@ jobs:
           CI: true
 
       # -------------------------
-      # 📦 Upload report
+      # 3️⃣ Task Negative tests (Task 3)
+      # -------------------------
+      - name: Run Task Negative tests
+        run: >
+          docker run --rm
+          task-manager-e2e
+          npx playwright test tests/tasks-negative.spec.ts --project=chromium --workers=1
+        env:
+          CI: true
+
+      # -------------------------
+      # 📦 Upload Playwright Report
       # -------------------------
       - name: Upload Playwright Report
         if: always()

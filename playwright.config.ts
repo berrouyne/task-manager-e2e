@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
 
-  // ❌ Disable full parallelism for stateful CRUD tests
+
   fullyParallel: false,
 
   forbidOnly: !!process.env.CI,
@@ -20,7 +20,7 @@ export default defineConfig({
     baseURL: 'https://significant-darcey-kwikicity-3dda52ea.koyeb.app',
 
     // CI = headless, local = headed
-    headless: !!process.env.CI,
+    headless: true,
 
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',

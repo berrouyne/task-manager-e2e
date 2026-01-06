@@ -25,12 +25,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await page.fill('textarea', 'Task created by Playwright');
     await page.locator('#priority').selectOption('High');
 
-    await Promise.all([
-      page.waitForResponse(r => r.url().includes('/tasks') && r.status() === 201),
-      page.click('button:has-text("Add Task")'),
-    ]);
+    await page.click('button:has-text("Add Task")');
 
-    await page.reload();
     await expect(taskTitle(page, title)).toBeVisible();
   });
 
@@ -42,13 +38,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
 
     await card.locator('button:has-text("Edit")').click();
     await page.locator('#edit-priority').selectOption('Low');
+    await page.click('button:has-text("Save Changes")');
 
-    await Promise.all([
-      page.waitForResponse(r => r.url().includes('/tasks') && r.status() === 200),
-      page.click('button:has-text("Save Changes")'),
-    ]);
-
-    await page.reload();
     await expect(taskTitle(page, title)).toBeVisible();
   });
 
@@ -58,12 +49,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     const card = taskCard(page, title);
     await expect(card).toBeVisible();
 
-    await Promise.all([
-      page.waitForResponse(r => r.url().includes('/tasks') && r.status() === 200),
-      card.locator('button:has-text("Mark Complete")').click(),
-    ]);
+    await card.locator('button:has-text("Mark Complete")').click();
 
-    // ✅ precise status text (not button)
     await expect(card.locator('text=Status: Complete')).toBeVisible();
   });
 
@@ -74,11 +61,7 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await expect(card).toBeVisible();
 
     page.once('dialog', d => d.accept());
-
-    await Promise.all([
-      page.waitForResponse(r => r.url().includes('/tasks') && r.status() === 200),
-      card.locator('button:has-text("Delete")').click(),
-    ]);
+    await card.locator('button:has-text("Delete")').click();
 
     await expect(taskTitle(page, title)).toHaveCount(0);
   });

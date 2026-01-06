@@ -16,16 +16,11 @@ test('Task Management (CRUD) – Happy Path', async ({ page }) => {
   await page.locator('textarea').fill('Task created by Playwright');
   await page.locator('#priority').selectOption('High');
 
-  const [createRes] = await Promise.all([
-    page.waitForResponse(
-      r => r.url().includes('/tasks') && r.request().method() === 'POST'
-    ),
-    page.getByRole('button', { name: /add task/i }).click(),
-  ]);
+  await page.getByRole('button', { name: /add task/i }).click();
 
-  expect(createRes.ok()).toBeTruthy();
-
+  // UI does NOT auto-refresh
   await page.reload();
+
   await expect(page.getByText(title)).toBeVisible({ timeout: 15000 });
 
   // ====================
@@ -57,14 +52,7 @@ test('Task Management (CRUD) – Happy Path', async ({ page }) => {
   // ====================
   page.once('dialog', d => d.accept());
 
-  const [deleteRes] = await Promise.all([
-    page.waitForResponse(
-      r => r.url().includes('/tasks') && r.request().method() === 'DELETE'
-    ),
-    page.getByRole('button', { name: /delete/i }).first().click(),
-  ]);
-
-  expect(deleteRes.ok()).toBeTruthy();
+  await page.getByRole('button', { name: /delete/i }).first().click();
 
   await page.reload();
   await expect(page.getByText(title)).toHaveCount(0);

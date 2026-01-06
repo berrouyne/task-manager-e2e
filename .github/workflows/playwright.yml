@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright Tests (Docker)
 
 on:
   push:
@@ -8,45 +8,24 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
+      # 🔨 Build Docker image
+      - name: Build Playwright Docker image
+        run: docker build -t task-manager-e2e .
 
-      - name: Install dependencies
-        run: npm ci
+      # ▶️ Run ALL tests inside Docker
+      - name: Run Playwright tests
+        run: docker run --rm task-manager-e2e
 
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
-
-      # -------------------------
-      # 1️⃣ Auth tests
-      # -------------------------
-      - name: Run Auth tests
-        run: npx playwright test tests/auth.spec.ts --project=chromium
-        env:
-          CI: true
-
-      # -------------------------
-      # 2️⃣ Task CRUD tests
-      # -------------------------
-      - name: Run Task CRUD tests
-        run: npx playwright test tests/tasks.spec.ts --project=chromium --workers=1
-        env:
-          CI: true
-
-      # -------------------------
-      # 3️⃣ Upload report
-      # -------------------------
+      # 📦 Upload report
       - name: Upload Playwright Report
-        if: ${{ !cancelled() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report

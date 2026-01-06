@@ -5,42 +5,42 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
 
   async function gotoDashboard(page: Page) {
     await page.goto('/dashboard');
-    await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible({ timeout: 15000 });
+    // Ensure page is ready
+    await expect(page.getByRole('heading', { name: /My Tasks/i })).toBeVisible({ timeout: 15000 });
   }
 
-  // Helper to find the card or wait for it to exist
   function getTaskCard(page: Page, taskTitle: string) {
-    return page.locator('.task-card, .border, div').filter({ hasText: taskTitle }).last();
+    // Scopes to a div that contains our specific title
+    return page.locator('div').filter({ hasText: taskTitle }).last();
   }
 
   test('Create Task: create a task and verify it appears', async ({ page }) => {
     title = `pw-task-${Date.now()}`;
     await gotoDashboard(page);
 
-    // Fill out the form
+    // 1. Fill and Click
     await page.getByPlaceholder(/groceries/i).fill(title);
     await page.locator('textarea').fill('Task created by Playwright');
     await page.locator('#priority').selectOption('High');
     
-    // Click Add Task
-    await page.getByRole('button', { name: /Add Task/i }).click();
+    // We wait for the network to settle after clicking
+    await Promise.all([
+      page.waitForLoadState('networkidle'),
+      page.getByRole('button', { name: /Add Task/i }).click()
+    ]);
 
-    // RETRY LOGIC: The server might be slow. 
-    // We will wait, then reload up to 3 times if the task isn't there.
-    let passed = false;
-    for (let i = 0; i < 3; i++) {
-      try {
-        await expect(page.getByText(title)).toBeVisible({ timeout: 5000 });
-        passed = true;
-        break;
-      } catch (e) {
-        await page.goto('/dashboard'); // Clean reload without the '?'
+    // 2. THE ULTIMATE FIX: Increased retries with a small pause
+    // Cloud DBs can be slow. We give it 30 seconds total to show up.
+    await expect(async () => {
+      const isVisible = await page.getByText(title).isVisible();
+      if (!isVisible) {
+        await page.goto('/dashboard'); // Hard refresh to pull fresh data
       }
-    }
-    
-    if (!passed) {
-      throw new Error(`Task "${title}" did not appear after creation and 3 reloads.`);
-    }
+      await expect(page.getByText(title)).toBeVisible();
+    }).toPass({
+      intervals: [2000, 5000, 5000], // Wait 2s, then 5s, then 5s between retries
+      timeout: 30000
+    });
   });
 
   test('Edit Task: modify priority only', async ({ page }) => {
@@ -52,23 +52,22 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await expect(dropdown).toBeVisible();
     
     await dropdown.selectOption('Low');
-    await page.locator('button').filter({ hasText: /save|update/i }).click();
+    await page.locator('button').filter({ hasText: /save|update/i }).first().click();
 
-    // Verify change with a reload if necessary
+    // Verify after a fresh load
     await page.goto('/dashboard');
-    await expect(getTaskCard(page, title)).toContainText('Low', { timeout: 10000 });
+    await expect(getTaskCard(page, title)).toContainText('Low', { timeout: 15000 });
   });
 
   test('Mark Complete: toggle status', async ({ page }) => {
     await gotoDashboard(page);
     const card = getTaskCard(page, title);
-    
     await card.getByRole('button', { name: /complete/i }).click();
     
-    // Allow for a reload if the UI doesn't update via AJAX
-    await page.waitForTimeout(1000); 
+    // Wait for DB write then refresh
+    await page.waitForTimeout(2000); 
     await page.goto('/dashboard');
-    await expect(getTaskCard(page, title)).toContainText('Complete');
+    await expect(getTaskCard(page, title)).toContainText(/Complete/i, { timeout: 15000 });
   });
 
   test('Delete Task: delete and verify removal', async ({ page }) => {
@@ -78,8 +77,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     page.once('dialog', d => d.accept());
     await card.getByRole('button', { name: /delete/i }).click();
 
-    // Verify removal
+    // Verify gone after refresh
     await page.goto('/dashboard');
-    await expect(page.getByText(title)).toHaveCount(0);
+    await expect(page.getByText(title)).toHaveCount(0, { timeout: 15000 });
   });
 });

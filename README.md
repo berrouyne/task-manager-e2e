@@ -1,121 +1,124 @@
-## 🛠 Tech Stack
+# Simple Task Manager – End-to-End Testing Project
 
-* **Framework:** [Playwright](https://playwright.dev/)
-* **Language:** TypeScript
-* **Runtime:** Node.js
-* **Containerization:** Docker
-* **CI/CD:** GitHub Actions
+This repository contains end-to-end (E2E) tests for a Simple Task Manager application.  
+The goal of this project is to demonstrate practical skills in automated testing, CI integration, and bug reporting using Playwright.
 
 ---
 
-## 📁 Project Structure
+## Tech Stack
 
-```text
+- Playwright
+- TypeScript
+- Node.js
+- Docker
+- GitHub Actions (CI)
+
+---
+
+## Project Structure
 .
 ├── tests/
-│   ├── auth.spec.ts            # Authentication flows
-│   ├── tasks.spec.ts           # CRUD happy path scenarios
-│   └── tasks-negative.spec.ts  # Edge cases and error handling
-├── reports/                    # (Generated) Test execution reports
-├── ui-ux-bug-report.md         # Documentation of UI/UX defects
-├── logic-issues-bug-report.md  # Documentation of functional defects
-├── playwright.config.ts        # Playwright configuration
-├── Dockerfile                  # Container definition for CI
+│ ├── auth.spec.ts
+│ ├── tasks.spec.ts
+│ ├── tasks-negative.spec.ts
+│
+├── ui-ux-bug-report.md
+├── logic-issues-bug-report.md
+├── playwright.config.ts
+├── Dockerfile
 └── README.md
-🚀 Setup & Installation
-Local Setup
+
+---
+
+## Setup (Local)
+
 Install dependencies:
 
-Bash
-
+```bash
 npm install
+
 Install Playwright browsers:
-
-Bash
-
 npx playwright install
-Running Tests
+Running Tests Locally
+
 Run all tests:
-
-Bash
-
 npx playwright test
 Run a specific test file:
-
-Bash
-
 npx playwright test tests/tasks.spec.ts
 Run tests in headed mode:
-
-Bash
-
 npx playwright test --headed
-View the HTML report after a run:
-
-Bash
-
+View the HTML report after execution:
 npx playwright show-report
-🧪 Test Coverage
-1. Authentication
-Login flow validation.
 
-Access control to dashboard.
+Continuous Integration (CI)
 
-2. Task Management (CRUD – Happy Path)
-Create: Adding new tasks.
+Tests are executed automatically using GitHub Actions when:
 
-Edit: Modifying existing tasks.
+Pushing to the main or master branch
 
-Complete: Marking tasks as finished.
+Opening a pull request
 
-Delete: Removing tasks.
+The CI pipeline:
 
-Backend: Response validation.
+Builds a Docker image for consistency
 
-3. Negative Scenarios & Edge Cases
-Missing required fields.
+Runs Playwright tests inside Docker
 
-Invalid input handling.
+Uploads Playwright HTML reports as artifacts
 
-Character limits and special characters.
+Test Coverage
+Task 1 – Authentication
 
-Whitespace-only inputs.
+Login flow validation
 
-🤖 Continuous Integration (CI)
-Tests run automatically via GitHub Actions on:
+Access control checks
 
-Push to main.
+Task 2 – Task Management (CRUD)
 
-Pull requests.
+Create task
 
-Details:
+Edit task
 
-Tests are executed inside Docker for environment consistency.
+Mark task as complete
 
-Playwright HTML reports are uploaded as GitHub Actions artifacts.
+Delete task
 
-📝 Bug Reports
-This project includes manual QA documentation in addition to automated tests.
+Task 3 – Negative Scenarios & Edge Cases
 
-UI / UX Bug Report
-File: ui-ux-bug-report.md
+Missing required fields
 
-Includes: Environment details, reproduction steps, impact assessment, and visual evidence.
+Invalid inputs
 
-Logic / Functional Bug Report
-File: logic-issues-bug-report.md
+Long text handling
 
-Includes: Functional defects, data persistence issues, and edge-case failures.
+Special characters handling
 
-🎯 Purpose of This Project
-This project demonstrates:
+Bug Reports
 
-Realistic end-to-end testing.
+The project includes documented bug reports based on testing observations:
 
-CI-ready automation.
+ui-ux-bug-report.md
+UI and usability issues such as missing feedback, layout problems, and unclear interactions.
 
-Docker-based test execution.
+logic-issues-bug-report.md
+Functional and logical issues related to data handling, consistency, and edge cases.
 
-Professional manual QA analysis and reporting.
+Each report contains:
 
-It is designed as a practical testing portfolio project.
+Environment details
+
+Steps to reproduce
+
+Expected vs actual behavior
+
+Impact assessment
+
+Evidence references
+
+Notes
+
+Tests are written to be CI-safe and deterministic
+
+Serial execution is used where state dependency exists
+
+Explicit waits and assertions are preferred over hard timeouts

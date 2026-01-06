@@ -1,29 +1,25 @@
-Simple Task Manager – End-to-End Testing Project
+# Simple Task Manager – End-to-End Testing Project
 
 This repository contains end-to-end (E2E) tests for a Simple Task Manager web application.
 
 The purpose of this project is to demonstrate practical skills in:
 
-End-to-end test automation
+- End-to-end test automation
+- Test structuring and best practices
+- CI integration using Docker and GitHub Actions
+- Clear and structured bug reporting
 
-Test structuring and best practices
+## Tech Stack
 
-CI integration using Docker and GitHub Actions
+- Playwright
+- TypeScript
+- Node.js
+- Docker
+- GitHub Actions (CI)
 
-Clear and structured bug reporting
+## Project Structure
 
-Tech Stack
-
-Playwright
-
-TypeScript
-
-Node.js
-
-Docker
-
-GitHub Actions (CI)
-Project Structure
+```text
 .
 ├── tests/
 │   ├── auth.spec.ts
@@ -35,4 +31,3 @@ Project Structure
 ├── playwright.config.ts
 ├── Dockerfile
 └── README.md
-Local Setup

@@ -1,5 +1,4 @@
 name: Playwright Tests
-
 on:
   push:
     branches: [ main, master ]
@@ -10,7 +9,6 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,8 +24,11 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Run Playwright tests (Chromium only)
-        run: npx playwright test --project=chromium
+      - name: Run Playwright tests
+        run: npx web-test-runner --start "npm run dev" --wait-on "http://localhost:3000" -- npx playwright test --project=chromium
+
+        env:
+          CI: true
 
       - name: Upload Playwright Report
         if: ${{ !cancelled() }}

@@ -9,6 +9,8 @@ The purpose of this project is to demonstrate practical skills in:
 - CI integration using Docker and GitHub Actions
 - Clear and structured bug reporting
 
+---
+
 ## Tech Stack
 
 - Playwright
@@ -16,6 +18,8 @@ The purpose of this project is to demonstrate practical skills in:
 - Node.js
 - Docker
 - GitHub Actions (CI)
+
+---
 
 ## Project Structure
 
@@ -32,99 +36,115 @@ The purpose of this project is to demonstrate practical skills in:
 ├── Dockerfile
 └── README.md
 ```
-Setup (Local)
-Install dependencies
+
+---
+
+## Setup (Local)
+
+### Install dependencies
+
+```bash
 npm install
-Install Playwright browsers
+```
+
+### Install Playwright browsers
+
+```bash
 npx playwright install
-Running Tests Locally
-Run all tests
+```
+
+---
+
+## Running Tests Locally
+
+### Run all tests
+
+```bash
 npx playwright test
+```
 
-Run a specific test file
+### Run a specific test file
+
+```bash
 npx playwright test tests/tasks.spec.ts
+```
 
-Run tests in headed mode
+### Run tests in headed mode
+
+```bash
 npx playwright test --headed
+```
 
-View the HTML report after execution
+### View the HTML report after execution
+
+```bash
 npx playwright show-report
+```
 
-Continuous Integration (CI)
+---
+
+## Continuous Integration (CI)
 
 Tests are executed automatically using GitHub Actions when:
 
-Pushing to the main or master branch
+- Pushing to the `main` or `master` branch
+- Opening a pull request
 
-Opening a pull request
+### CI Pipeline Overview
 
-CI Pipeline Overview
+- Builds a Docker image for a consistent environment
+- Runs Playwright tests inside Docker
+- Uploads Playwright HTML reports as CI artifacts
 
-Builds a Docker image for a consistent environment
+---
 
-Runs Playwright tests inside Docker
+## Test Coverage
 
-Uploads Playwright HTML reports as CI artifacts
+### Task 1 – Authentication
 
-Test Coverage
-Task 1 – Authentication
+- Login flow validation
+- Access control checks
 
-Login flow validation
+### Task 2 – Task Management (CRUD)
 
-Access control checks
+- Create task
+- Edit task
+- Mark task as complete
+- Delete task
 
-Task 2 – Task Management (CRUD)
+### Task 3 – Negative Scenarios & Edge Cases
 
-Create task
+- Missing required fields
+- Invalid inputs
+- Long text handling
+- Special characters handling
 
-Edit task
+---
 
-Mark task as complete
-
-Delete task
-
-Task 3 – Negative Scenarios & Edge Cases
-
-Missing required fields
-
-Invalid inputs
-
-Long text handling
-
-Special characters handling
-
-Bug Reports
+## Bug Reports
 
 The project includes documented bug reports based on testing observations.
 
-UI / UX Issues
+### UI / UX Issues
 
-File: ui-ux-bug-report.md
+**File:** `ui-ux-bug-report.md`
 
-Missing user feedback
+- Missing user feedback
+- Layout and usability problems
+- Unclear or inconsistent interactions
 
-Layout and usability problems
+### Logic / Functional Issues
 
-Unclear or inconsistent interactions
+**File:** `logic-issues-bug-report.md`
 
-Logic / Functional Issues
-
-File: logic-issues-bug-report.md
-
-Data handling issues
-
-Logical inconsistencies
-
-Edge-case behavior problems
+- Data handling issues
+- Logical inconsistencies
+- Edge-case behavior problems
 
 Each bug report contains:
 
-Environment details
-
-Steps to reproduce
-
-Expected vs actual behavior
-
-Impact assessment
-
-Evidence references
+- Environment details
+- Steps to reproduce
+- Expected vs actual behavior
+- Impact assessment
+- Evidence references

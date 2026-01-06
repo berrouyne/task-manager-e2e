@@ -25,8 +25,7 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: Run Playwright tests
-
-        run: npx start-server-and-test "npm run dev" http://localhost:3000 "npx playwright test --project=chromium"
+        run: npx playwright test --project=chromium
         env:
           CI: true
 

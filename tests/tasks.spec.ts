@@ -8,6 +8,14 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await expect(page.locator('text=My Tasks')).toBeVisible();
   }
 
+  async function waitForTask(page: Page, text: string) {
+    await page.waitForFunction(
+      t => document.body.innerText.includes(t),
+      text,
+      { timeout: 30000 }
+    );
+  }
+
   function taskTitle(page: Page, text: string) {
     return page.locator(`text=${text}`).first();
   }
@@ -27,8 +35,8 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
 
     await page.click('button:has-text("Add Task")');
 
-    // 🔑 REQUIRED FOR CI
     await page.reload();
+    await waitForTask(page, title);
     await expect(taskTitle(page, title)).toBeVisible();
   });
 
@@ -43,6 +51,7 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await page.click('button:has-text("Save Changes")');
 
     await page.reload();
+    await waitForTask(page, title);
     await expect(taskTitle(page, title)).toBeVisible();
   });
 

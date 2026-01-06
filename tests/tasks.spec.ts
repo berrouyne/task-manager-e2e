@@ -4,13 +4,12 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
   let title: string;
 
   async function gotoDashboard(page: Page) {
+    // Force navigation to the clean dashboard URL
     await page.goto('/dashboard');
-    // This waits for the page to actually load correctly
     await expect(page.getByRole('heading', { name: 'My Tasks' })).toBeVisible({ timeout: 15000 });
   }
 
   function getTaskCard(page: Page, taskTitle: string) {
-    // Scopes actions to the specific task card
     return page.locator('div').filter({ hasText: taskTitle }).last();
   }
 
@@ -22,10 +21,14 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     await page.locator('textarea').fill('Task created by Playwright');
     await page.locator('#priority').selectOption('High');
     
-    // Click Add
+    // 1. Click Add Task
     await page.getByRole('button', { name: /Add Task/i }).click();
 
-    // No reload needed. Playwright waits for the UI to update automatically.
+    // 2. Since your app seems to refresh/redirect, let's wait for navigation to finish
+    // or manually go back to the dashboard if the app doesn't redirect automatically.
+    await page.waitForURL('**/dashboard*'); 
+    
+    // 3. Verify the task is visible
     await expect(page.getByText(title)).toBeVisible({ timeout: 15000 });
   });
 
@@ -35,17 +38,14 @@ test.describe.serial('Task 2 - Task Management (CRUD) - Happy Paths', () => {
     const card = getTaskCard(page, title);
     await card.getByRole('button', { name: /edit/i }).click();
     
-    // Wait for the edit form to appear
     const dropdown = page.locator('#edit-priority');
     await expect(dropdown).toBeVisible();
     
     await dropdown.selectOption('Low');
-    
-    // Use a locator that finds the button specifically
     await page.locator('button').filter({ hasText: /save/i }).click();
 
-    // Verify change within the card
-    await expect(card).toContainText('Low');
+    // After saving, wait for the dashboard state to settle
+    await expect(card).toContainText('Low', { timeout: 10000 });
   });
 
   test('Mark Complete: toggle status', async ({ page }) => {
